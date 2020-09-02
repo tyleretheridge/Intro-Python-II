@@ -1,5 +1,6 @@
 from room import Room
-
+from player import Player
+from item import Item
 # Declare all the rooms
 
 room = {
@@ -38,6 +39,17 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+player = Player(name='Tyler', current_room=room['outside'])
+
+# Create items 
+sword = Item(name='sword', description='A somewhat rusty blade.')
+shield = Item(name='shield', description='An old but sturdy shield.')
+
+# Add items to foyer
+foyer_items = [sword, shield]
+room['foyer'].add_items(foyer_items)
+
+
 
 # Write a loop that:
 #
@@ -49,3 +61,57 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+while True:
+
+
+    instructions = """\n INSTRUCTIONS:
+    To check your inventory, type: 'check inventory'
+    To change items, type: 'take/drop' [item_name]
+    To move to another area, choose a single directon: 'N, S, E, W'
+    To exit the game, type: 'q'
+    \nType Here:    """
+
+    error = "\n>> ERROR, please enter a valid input."
+    valid_move = ['n', 's', 'e', 'w']
+
+
+
+    print("\n----------")
+    # Display player's current room and its description
+    player.location()
+    # Display any items in current room
+    player.current_room.get_room_items()
+    # Take user input, clean, and add to list
+    user_input = input(instructions).strip().lower().split(' ')
+
+    # Parse for items or movement based on len of user input
+    input_length = len(user_input)
+    
+    # [Verb] Parsing
+    if input_length == 1:
+        user_input = user_input[0]
+        if user_input in valid_move:
+            # Player movement and location updating
+            try:
+                player.move(user_input)
+                
+            except:
+                print(invalid_room)
+        # Exit program
+        elif user_input[0] == 'q':
+            print("Thanks for playing!")
+            break
+        # Input error handling
+        else:
+            print(error)
+
+    # [Verb] [Object] Parsing       
+    elif input_length == 2:
+        action = user_input[0]
+        item_names = user_input[1]
+        player.item_action(action, item_names)
+
+
+    else:
+        print(error)
